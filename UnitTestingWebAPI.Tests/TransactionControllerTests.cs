@@ -38,7 +38,7 @@ namespace UnitTestingWebAPI.Tests
             _randomBankTransactions = SetupBankTransactions();
             _bankTransactionRepository = SetupBankTransactionRepository();
             _unitOfWork = new Mock<IUnitOfWork>().Object;
-            _bankAccountService = new BankAccountService(_bankAccountRepository, _unitOfWork);
+            _bankTransactionService = new BankAccountService(_bankAccountRepository, _unitOfWork);
         }
 
         public List<BankAccount> SetupBankAccounts()
