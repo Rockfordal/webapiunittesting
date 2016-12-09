@@ -10,9 +10,11 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using UnitTestingWebAPI.Domain;
 using UnitTestingWebAPI.Service;
+using System.Web.Http.Cors;
 
 namespace UnitTestingWebAPI.API.Core.Controllers
 {
+    [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
     public class BankAccountsController : ApiController
     {
         private IBankAccountService _BankAccountService;

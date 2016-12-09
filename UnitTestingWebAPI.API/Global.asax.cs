@@ -16,6 +16,7 @@ namespace UnitTestingWebAPI.API
         {
             // Init database
             System.Data.Entity.Database.SetInitializer(new BloggerInitializer());
+            //GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
     }
 }

@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionFilterTests.cs" />
+    <Compile Include="TransactionControllerTests.cs" />
     <Compile Include="ControllerTests.cs" />
     <Compile Include="Helpers\ControllerActionSelector.cs" />
     <Compile Include="Hosting\Startup.cs" />

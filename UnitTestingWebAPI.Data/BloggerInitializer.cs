@@ -22,7 +22,7 @@ namespace UnitTestingWebAPI.Data
         {
             List<BankAccount> _bankAccounts = new List<BankAccount>();
 
-            // Add two Blogs
+            // Add two BankAccounts
             BankAccount _personkonto = new BankAccount()
             {
                 Name = "Kurts personkonto",
@@ -43,6 +43,32 @@ namespace UnitTestingWebAPI.Data
             _bankAccounts.Add(_servicekonto);
 
             return _bankAccounts;
+        }
+
+        public static List<BankTransaction> GetBankTransactions()
+        {
+            List<BankTransaction> _bankTransactions = new List<BankTransaction>();
+
+            // Add two Transactions
+            BankTransaction _buyfruit = new BankTransaction()
+            {
+                Amount = 500.0m
+                //Number = "8420-5 510.24.233-5",
+                //Owner = "Kurt Ohlsson",
+                //Transactions = GetKurtsTransactions()
+            };
+
+            BankTransaction _buymonitor = new BankTransaction()
+            {
+                Amount = 750.0m
+                //Owner = "Björn Borg",
+                //Transactions = GetBjornsTransactions()
+            };
+
+            _bankTransactions.Add(_buyfruit);
+            _bankTransactions.Add(_buymonitor);
+
+            return _bankTransactions;
         }
 
         public static List<Blog> GetBlogs()

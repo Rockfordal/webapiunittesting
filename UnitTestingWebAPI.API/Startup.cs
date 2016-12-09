@@ -1,6 +1,8 @@
 ﻿#region Using
 using Autofac;
 using Autofac.Integration.WebApi;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.StaticFiles;
 using Owin;
 using System;
 using System.Collections.Generic;
@@ -25,13 +27,23 @@ namespace UnitTestingWebAPI.API
             var config = new HttpConfiguration();
             config.Services.Replace(typeof(IAssembliesResolver), new CustomAssembliesResolver());
             config.Formatters.Add(new ArticleFormatter());
+            config.EnableCors();
+
+            const string rootFolder = ".";
+            var fileSystem = new PhysicalFileSystem(rootFolder);
+            var options = new FileServerOptions
+            {
+                EnableDefaultFiles = true,
+                FileSystem = fileSystem
+            };
+
+            appBuilder.UseFileServer(options);
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-
 
             // Autofac configuration
             var builder = new ContainerBuilder();

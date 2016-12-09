@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace UnitTestingWebAPI.Data
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Article> Articles { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
+        public DbSet<BankTransaction> BankTransactions { get; set; }
 
         public virtual void Commit()
         {
@@ -28,9 +30,11 @@ namespace UnitTestingWebAPI.Data
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
             modelBuilder.Configurations.Add(new ArticleConfiguration());
             modelBuilder.Configurations.Add(new BlogConfiguration());
             modelBuilder.Configurations.Add(new BankAccountConfiguration());
+            modelBuilder.Configurations.Add(new BankTransactionConfiguration());
         }
     }
 }
