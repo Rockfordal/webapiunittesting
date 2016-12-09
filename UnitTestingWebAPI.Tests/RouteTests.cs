@@ -33,6 +33,20 @@ namespace UnitTestingWebAPI.Tests
         #endregion
 
         #region Tests
+
+        [Test]
+        public void RouteShouldControllerGetBankAccountIsInvoked()
+        {
+            //var request = new HttpRequestMessage(HttpMethod.Get, "http://www.chsakell.com/api/accounts/2");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:60000/api/bankaccounts/2");
+
+            var _actionSelector = new ControllerActionSelector(_config, request);
+
+            Assert.That(typeof(BankAccountsController), Is.EqualTo(_actionSelector.GetControllerType()));
+            Assert.That(GetMethodName((BankAccountsController c) => c.GetBankAccount(2)),
+                Is.EqualTo(_actionSelector.GetActionName()));
+        }
+
         [Test]
         public void RouteShouldControllerGetArticleIsInvoked()
         {

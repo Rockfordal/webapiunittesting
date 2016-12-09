@@ -26,9 +26,12 @@ namespace UnitTestingWebAPI.Tests
     {
         #region Variables
         IArticleService _articleService;
+        IBankAccountService _bankAccountService;
         IArticleRepository _articleRepository;
+        IBankAccountRepository _bankAccountRepository;
         IUnitOfWork _unitOfWork;
         List<Article> _randomArticles;
+        List<BankAccount> _randomBankAccounts;
         #endregion
 
         #region Setup
@@ -36,9 +39,12 @@ namespace UnitTestingWebAPI.Tests
         public void Setup()
         {
             _randomArticles = SetupArticles();
+            _randomBankAccounts = SetupBankAccounts();
 
             _articleRepository = SetupArticleRepository();
+            _bankAccountRepository = SetupBankAccountRepository();
             _unitOfWork = new Mock<IUnitOfWork>().Object;
+            _bankAccountService = new BankAccountService(_bankAccountRepository, _unitOfWork);
             _articleService = new ArticleService(_articleRepository, _unitOfWork);
         }
 
@@ -51,6 +57,17 @@ namespace UnitTestingWebAPI.Tests
                 _article.ID = ++_counter;
 
             return _articles;
+        }
+
+        public List<BankAccount> SetupBankAccounts()
+        {
+            int _counter = new int();
+            List<BankAccount> _bankaccounts = BloggerInitializer.GetBankAccounts();
+
+            foreach (BankAccount _account in _bankaccounts)
+                _account.ID = ++_counter;
+
+            return _bankaccounts;
         }
 
         public IArticleRepository SetupArticleRepository()
@@ -93,6 +110,52 @@ namespace UnitTestingWebAPI.Tests
 
                     if (_articleToRemove != null)
                         _randomArticles.Remove(_articleToRemove);
+                }));
+
+            // Return mock implementation
+            return repo.Object;
+        }
+
+        public IBankAccountRepository SetupBankAccountRepository()
+        {
+            // Init repository
+            var repo = new Mock<IBankAccountRepository>();
+
+            // Setup mocking behavior
+            repo.Setup(r => r.GetAll()).Returns(_randomBankAccounts);
+
+            repo.Setup(r => r.GetById(It.IsAny<int>()))
+                .Returns(new Func<int, BankAccount>(
+                    id => _randomBankAccounts.Find(a => a.ID.Equals(id))));
+
+            repo.Setup(r => r.Add(It.IsAny<BankAccount>()))
+                .Callback(new Action<BankAccount>(newBankAccount =>
+                {
+                    dynamic maxAccountID = _randomBankAccounts.Last().ID;
+                    dynamic nextAccountID = maxAccountID + 1;
+                    newBankAccount.ID = nextAccountID;
+                    newBankAccount.DateCreated = DateTime.Now;
+                    _randomBankAccounts.Add(newBankAccount);
+                }));
+
+            repo.Setup(r => r.Update(It.IsAny<BankAccount>()))
+                .Callback(new Action<BankAccount>(x =>
+                {
+                    var oldBankAccount = _randomBankAccounts.Find(a => a.ID == x.ID);
+                    oldBankAccount.DateCreated = DateTime.Now;
+                    oldBankAccount.Name = x.Name;
+                    oldBankAccount.Number = x.Number;
+                    //oldBankAccount.Owner = x.OwnerID;
+                    //oldBankACcount.URL = x.URL;
+                }));
+
+            repo.Setup(r => r.Delete(It.IsAny<BankAccount>()))
+                .Callback(new Action<BankAccount>(x =>
+                {
+                    var _bankAccountToRemove = _randomBankAccounts.Find(a => a.ID == x.ID);
+
+                    if (_bankAccountToRemove != null)
+                        _randomBankAccounts.Remove(_bankAccountToRemove);
                 }));
 
             // Return mock implementation

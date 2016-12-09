@@ -62,9 +62,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\ArticlesController.cs" />
+    <Compile Include="Controllers\BankAccountsController.cs" />
     <Compile Include="Controllers\BlogsController.cs" />
     <Compile Include="CustomAssembliesResolver.cs" />
     <Compile Include="Filters\ArticlesReversedFilter.cs" />
+    <Compile Include="MediaTypeFormatters\BankAccountFormatter.cs" />
     <Compile Include="MediaTypeFormatters\ArticleFormatter.cs" />
     <Compile Include="MessageHandlers\EndRequestHandler.cs" />
     <Compile Include="MessageHandlers\HeaderAppenderHandler.cs" />

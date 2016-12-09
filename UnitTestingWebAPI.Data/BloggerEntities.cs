@@ -19,6 +19,7 @@ namespace UnitTestingWebAPI.Data
 
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Article> Articles { get; set; }
+        public DbSet<BankAccount> BankAccounts { get; set; }
 
         public virtual void Commit()
         {
@@ -29,6 +30,7 @@ namespace UnitTestingWebAPI.Data
         {
             modelBuilder.Configurations.Add(new ArticleConfiguration());
             modelBuilder.Configurations.Add(new BlogConfiguration());
+            modelBuilder.Configurations.Add(new BankAccountConfiguration());
         }
     }
 }

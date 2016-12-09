@@ -36,6 +36,7 @@ namespace UnitTestingWebAPI.API
             // Autofac configuration
             var builder = new ContainerBuilder();
             builder.RegisterApiControllers(typeof(BlogsController).Assembly);
+            builder.RegisterApiControllers(typeof(BankAccountsController).Assembly);
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>().InstancePerRequest();
             builder.RegisterType<DbFactory>().As<IDbFactory>().InstancePerRequest();
 
@@ -43,8 +44,17 @@ namespace UnitTestingWebAPI.API
             builder.RegisterAssemblyTypes(typeof(BlogRepository).Assembly)
                 .Where(t => t.Name.EndsWith("Repository"))
                 .AsImplementedInterfaces().InstancePerRequest();
+
+            builder.RegisterAssemblyTypes(typeof(BankAccountRepository).Assembly)
+                .Where(t => t.Name.EndsWith("Repository"))
+                .AsImplementedInterfaces().InstancePerRequest();
+
             // Services
             builder.RegisterAssemblyTypes(typeof(ArticleService).Assembly)
+               .Where(t => t.Name.EndsWith("Service"))
+               .AsImplementedInterfaces().InstancePerRequest();
+
+            builder.RegisterAssemblyTypes(typeof(BankAccountService).Assembly)
                .Where(t => t.Name.EndsWith("Service"))
                .AsImplementedInterfaces().InstancePerRequest();
 

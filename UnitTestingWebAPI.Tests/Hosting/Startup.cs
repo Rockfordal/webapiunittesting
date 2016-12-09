@@ -62,13 +62,24 @@ namespace UnitTestingWebAPI.Tests.Hosting
                 );
             builder.RegisterInstance(_blogsRepository.Object).As<IBlogRepository>();
 
+            var _bankAccountRepository = new Mock<IBankAccountRepository>();
+            _bankAccountRepository.Setup(x => x.GetAll()).Returns(
+                BloggerInitializer.GetBankAccounts
+                );
+            builder.RegisterInstance(_bankAccountRepository.Object).As<IBankAccountRepository>();
+
             // Services
             builder.RegisterAssemblyTypes(typeof(ArticleService).Assembly)
                .Where(t => t.Name.EndsWith("Service"))
                .AsImplementedInterfaces().InstancePerRequest();
 
+            builder.RegisterAssemblyTypes(typeof(BankAccountService).Assembly)
+               .Where(t => t.Name.EndsWith("Service"))
+               .AsImplementedInterfaces().InstancePerRequest();
+
             builder.RegisterInstance(new ArticleService(_articlesRepository.Object, _unitOfWork.Object));
             builder.RegisterInstance(new BlogService(_blogsRepository.Object, _unitOfWork.Object));
+            builder.RegisterInstance(new BankAccountService(_bankAccountRepository.Object, _unitOfWork.Object));
 
             IContainer container = builder.Build();
             config.DependencyResolver = new AutofacWebApiDependencyResolver(container);

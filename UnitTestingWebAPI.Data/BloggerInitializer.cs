@@ -13,8 +13,36 @@ namespace UnitTestingWebAPI.Data
         protected override void Seed(BloggerEntities context)
         {
             GetBlogs().ForEach(b => context.Blogs.Add(b));
+            GetBankAccounts().ForEach(b => context.BankAccounts.Add(b));
 
             context.Commit();
+        }
+
+        public static List<BankAccount> GetBankAccounts()
+        {
+            List<BankAccount> _bankAccounts = new List<BankAccount>();
+
+            // Add two Blogs
+            BankAccount _personkonto = new BankAccount()
+            {
+                Name = "Kurts personkonto",
+                Number = "8420-5 510.24.233-5",
+                Owner = "Kurt Ohlsson",
+                //Transactions = GetKurtsTransactions()
+            };
+
+            BankAccount _servicekonto = new BankAccount()
+            {
+                Name = "Björn Borgs sparkonto",
+                Number = "8390-2 520.19.301-7",
+                Owner = "Björn Borg",
+                //Transactions = GetBjornsTransactions()
+            };
+
+            _bankAccounts.Add(_personkonto);
+            _bankAccounts.Add(_servicekonto);
+
+            return _bankAccounts;
         }
 
         public static List<Blog> GetBlogs()
@@ -106,5 +134,6 @@ namespace UnitTestingWebAPI.Data
 
             return _articles;
         }
+
     }
 }

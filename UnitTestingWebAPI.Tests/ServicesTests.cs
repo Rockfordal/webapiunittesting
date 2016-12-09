@@ -21,8 +21,11 @@ namespace UnitTestingWebAPI.Tests
         #region Variables
         IArticleService _articleService;
         IArticleRepository _articleRepository;
+        IBankAccountService _bankAccountService;
+        IBankAccountRepository _bankAccountRepository;
         IUnitOfWork _unitOfWork;
         List<Article> _randomArticles;
+        List<BankAccount> _randomBankAccounts;
         #endregion
 
         #region Setup
@@ -30,10 +33,24 @@ namespace UnitTestingWebAPI.Tests
         public void Setup()
         {
             _randomArticles = SetupArticles();
+            _randomBankAccounts = SetupBankAccounts();
 
             _articleRepository = SetupArticleRepository();
+            _bankAccountRepository = SetupBankAccountRepository();
             _unitOfWork = new Mock<IUnitOfWork>().Object;
             _articleService = new ArticleService(_articleRepository, _unitOfWork);
+            _bankAccountService = new BankAccountService(_bankAccountRepository, _unitOfWork);
+        }
+
+        public List<BankAccount> SetupBankAccounts()
+        {
+            int _counter = new int();
+            List<BankAccount> _bankaccounts = BloggerInitializer.GetBankAccounts();
+
+            foreach (BankAccount _bankaccount in _bankaccounts)
+                _bankaccount.ID = ++_counter;
+
+            return _bankaccounts;
         }
 
         public List<Article> SetupArticles()
@@ -90,9 +107,78 @@ namespace UnitTestingWebAPI.Tests
             return repo.Object;
         }
 
+        public IBankAccountRepository SetupBankAccountRepository()
+        {
+            // Init repository
+            var repo = new Mock<IBankAccountRepository>();
+
+            // Setup mocking behavior
+            repo.Setup(r => r.GetAll()).Returns(_randomBankAccounts);
+
+            repo.Setup(r => r.GetById(It.IsAny<int>()))
+                .Returns(new Func<int, BankAccount>(
+                    id => _randomBankAccounts.Find(a => a.ID.Equals(id))));
+
+            repo.Setup(r => r.Add(It.IsAny<BankAccount>()))
+                .Callback(new Action<BankAccount>(newBankAccount =>
+                {
+                    dynamic maxBankAccountID = _randomBankAccounts.Last().ID;
+                    dynamic nextBankAccountID = maxBankAccountID + 1;
+                    newBankAccount.ID = nextBankAccountID;
+                    newBankAccount.DateCreated = DateTime.Now;
+                    _randomBankAccounts.Add(newBankAccount);
+                }));
+
+            repo.Setup(r => r.Update(It.IsAny<BankAccount>()))
+                .Callback(new Action<BankAccount>(x =>
+                {
+                    var oldBankAccount = _randomBankAccounts.Find(a => a.ID == x.ID);
+                    oldBankAccount.DateCreated = DateTime.Now;
+                    oldBankAccount = x;
+                }));
+
+            repo.Setup(r => r.Delete(It.IsAny<BankAccount>()))
+                .Callback(new Action<BankAccount>(x =>
+                {
+                    var _bankAccountToRemove = _randomBankAccounts.Find(a => a.ID == x.ID);
+
+                    if (_bankAccountToRemove != null)
+                        _randomBankAccounts.Remove(_bankAccountToRemove);
+                }));
+
+            // Return mock implementation
+            return repo.Object;
+        }
+
         #endregion
 
         #region Tests
+        [Test]
+        public void ServiceShouldReturnAllBankAccounts()
+        {
+            var bankaccounts = _bankAccountService.GetBankAccounts();
+
+            Assert.That(bankaccounts, Is.EqualTo(_randomBankAccounts));
+        }
+
+        [Test]
+        public void ServiceShouldReturnRightBankAccount()
+        {
+            var bjornsSparkonto = _bankAccountService.GetBankAccount(2);
+
+            Assert.That(bjornsSparkonto,
+                Is.EqualTo(_randomBankAccounts.Find(a => a.Name.Contains("Björn Borgs sparkonto"))));
+        }
+
+        [Test]
+        public void ServiceShouldNotReturnWrongBankAccount()
+        {
+            var bjornsSparkonto = _bankAccountService.GetBankAccount(1);
+
+            Assert.That(bjornsSparkonto,
+                Is.Not.EqualTo(_randomBankAccounts.Find(a => a.Name.Contains("asdlfkjlwejfölawkefjwef"))));
+        }
+
         [Test]
         public void ServiceShouldReturnAllArticles()
         {
